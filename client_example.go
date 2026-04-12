@@ -8,7 +8,7 @@ import (
 )
 
 // Example of how to use the new JSON protocol
-func main() {
+func example() {
 	// Connect to the server
 	conn, err := net.Dial("tcp", "127.0.0.1:6767")
 	if err != nil {
@@ -46,4 +46,3 @@ func sendInput(conn net.Conn, virtualKey string, duration uint16) {
 
 	conn.Write(append(jsonData, '\n'))
 }
-

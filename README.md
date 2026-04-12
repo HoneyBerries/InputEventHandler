@@ -175,7 +175,7 @@ For a complete reference, see `keymap/keymap.go` in the source code.
 ### Go Client
 
 ```go
-package main
+package example
 
 import (
 	"encoding/json"
@@ -194,7 +194,7 @@ func sendInput(conn net.Conn, virtualKey string, duration uint16) error {
 	return err
 }
 
-func main() {
+func example() {
 	conn, err := net.Dial("tcp", "127.0.0.1:6767")
 	if err != nil {
 		fmt.Println("Connection failed:", err)
@@ -275,7 +275,7 @@ public class InputClient {
         socket.close();
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void example(String[] args) throws IOException, InterruptedException {
         InputClient client = new InputClient("127.0.0.1", 6767);
 
         // Press 'A' for 50ms
@@ -348,7 +348,7 @@ echo '{"virtual_key":"VK_LBUTTON","duration":10}' | nc localhost 6767
 
 The project is organized into clean Go packages:
 
-- **`main.go`** — Entry point, starts the listener on port 6767
+- **`example.go`** — Entry point, starts the listener on port 6767
 - **`listener/listener.go`** — TCP server, connection handling, JSON parsing
 - **`input/input.go`** — Windows API wrapper for keyboard and mouse input
 - **`keymap/keymap.go`** — Virtual Key code reference table
