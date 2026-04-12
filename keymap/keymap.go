@@ -2,7 +2,7 @@ package keymap
 
 // KeyDef defines a keyboard/mouse key
 // Keyboard: Code = virtual key (0x01 - 0xFF)
-// Mouse: Code = 256 (left), 257 (right), 258 (middle)
+// Mouse: Code = 256 (left), 257 (right), 258 (middle), 259 (x1), 260 (x2)
 type KeyDef struct {
 	Code uint16 // virtual key for keyboard, or 256+ for mouse buttons
 }
@@ -14,8 +14,8 @@ var VirtualKeyMap = map[string]KeyDef{
 	"VK_LBUTTON":  {Code: 256},
 	"VK_RBUTTON":  {Code: 257},
 	"VK_MBUTTON":  {Code: 258},
-	"VK_XBUTTON1": {Code: 256},
-	"VK_XBUTTON2": {Code: 257},
+	"VK_XBUTTON1": {Code: 259},
+	"VK_XBUTTON2": {Code: 260},
 
 	// Function keys
 	"VK_F1":  {Code: 0x70},

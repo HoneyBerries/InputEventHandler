@@ -77,94 +77,94 @@ The server accepts **line-delimited JSON** input. Each line is a complete JSON o
 
 ### Mouse Buttons
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_LBUTTON` | Left mouse button |
-| `VK_RBUTTON` | Right mouse button |
-| `VK_MBUTTON` | Middle mouse button |
-| `VK_XBUTTON1` | X1 mouse button |
-| `VK_XBUTTON2` | X2 mouse button |
+| Virtual Key   | Description         |
+|---------------|---------------------|
+| `VK_LBUTTON`  | Left mouse button   |
+| `VK_RBUTTON`  | Right mouse button  |
+| `VK_MBUTTON`  | Middle mouse button |
+| `VK_XBUTTON1` | X1 mouse button     |
+| `VK_XBUTTON2` | X2 mouse button     |
 
 ### Keyboard Letters (A-Z)
 
-| Virtual Key | Description |
-|-------------|-------------|
+| Virtual Key           | Description |
+|-----------------------|-------------|
 | `VK_A` through `VK_Z` | Letter keys |
 
 ### Numbers (0-9)
 
-| Virtual Key | Description |
-|-------------|-------------|
+| Virtual Key           | Description |
+|-----------------------|-------------|
 | `VK_0` through `VK_9` | Number keys |
 
 ### Function Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
+| Virtual Key              | Description          |
+|--------------------------|----------------------|
 | `VK_F1` through `VK_F12` | Function keys F1-F12 |
 
 ### Special Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_SPACE` | Spacebar |
-| `VK_RETURN` | Enter key |
-| `VK_ESCAPE` | Escape key |
-| `VK_BACK` | Backspace key |
-| `VK_TAB` | Tab key |
-| `VK_DELETE` | Delete key |
-| `VK_INSERT` | Insert key |
+| Virtual Key | Description   |
+|-------------|---------------|
+| `VK_SPACE`  | Spacebar      |
+| `VK_RETURN` | Enter key     |
+| `VK_ESCAPE` | Escape key    |
+| `VK_BACK`   | Backspace key |
+| `VK_TAB`    | Tab key       |
+| `VK_DELETE` | Delete key    |
+| `VK_INSERT` | Insert key    |
 
 ### Navigation Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_HOME` | Home key |
-| `VK_END` | End key |
-| `VK_PRIOR` | Page Up key |
-| `VK_NEXT` | Page Down key |
+| Virtual Key | Description   |
+|-------------|---------------|
+| `VK_HOME`   | Home key      |
+| `VK_END`    | End key       |
+| `VK_PRIOR`  | Page Up key   |
+| `VK_NEXT`   | Page Down key |
 
 ### Arrow Keys
 
 | Virtual Key | Description |
 |-------------|-------------|
-| `VK_UP` | Up arrow |
-| `VK_DOWN` | Down arrow |
-| `VK_LEFT` | Left arrow |
-| `VK_RIGHT` | Right arrow |
+| `VK_UP`     | Up arrow    |
+| `VK_DOWN`   | Down arrow  |
+| `VK_LEFT`   | Left arrow  |
+| `VK_RIGHT`  | Right arrow |
 
 ### Modifier Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_SHIFT` | Shift key |
-| `VK_LSHIFT` | Left Shift |
-| `VK_RSHIFT` | Right Shift |
-| `VK_CONTROL` | Control key |
-| `VK_LCONTROL` | Left Control |
+| Virtual Key   | Description   |
+|---------------|---------------|
+| `VK_SHIFT`    | Shift key     |
+| `VK_LSHIFT`   | Left Shift    |
+| `VK_RSHIFT`   | Right Shift   |
+| `VK_CONTROL`  | Control key   |
+| `VK_LCONTROL` | Left Control  |
 | `VK_RCONTROL` | Right Control |
-| `VK_MENU` | Alt key |
-| `VK_LMENU` | Left Alt |
-| `VK_RMENU` | Right Alt |
+| `VK_MENU`     | Alt key       |
+| `VK_LMENU`    | Left Alt      |
+| `VK_RMENU`    | Right Alt     |
 
 ### Lock Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_CAPITAL` | Caps Lock |
-| `VK_NUMLOCK` | Num Lock |
-| `VK_SCROLL` | Scroll Lock |
+| Virtual Key  | Description |
+|--------------|-------------|
+| `VK_CAPITAL` | Caps Lock   |
+| `VK_NUMLOCK` | Num Lock    |
+| `VK_SCROLL`  | Scroll Lock |
 
 ### Numpad Keys
 
-| Virtual Key | Description |
-|-------------|-------------|
-| `VK_NUMPAD0` through `VK_NUMPAD9` | Numpad 0-9 |
-| `VK_MULTIPLY` | Numpad * |
-| `VK_ADD` | Numpad + |
-| `VK_SUBTRACT` | Numpad - |
-| `VK_DECIMAL` | Numpad . |
-| `VK_DIVIDE` | Numpad / |
+| Virtual Key                       | Description |
+|-----------------------------------|-------------|
+| `VK_NUMPAD0` through `VK_NUMPAD9` | Numpad 0-9  |
+| `VK_MULTIPLY`                     | Numpad *    |
+| `VK_ADD`                          | Numpad +    |
+| `VK_SUBTRACT`                     | Numpad -    |
+| `VK_DECIMAL`                      | Numpad .    |
+| `VK_DIVIDE`                       | Numpad /    |
 
 For a complete reference, see `keymap/keymap.go` in the source code.
 

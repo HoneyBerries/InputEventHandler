@@ -15,7 +15,12 @@ func example() {
 		fmt.Println("Connection failed:", err)
 		return
 	}
-	defer conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			return
+		}
+	}(conn)
 
 	fmt.Println("Connected to Input Engine")
 
