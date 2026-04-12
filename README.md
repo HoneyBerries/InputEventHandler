@@ -9,27 +9,38 @@ A Windows-only TCP server that accepts JSON commands and simulates keyboard and 
 - **Tap Only** — Only supports tap actions (press + hold + release)
 - **No Binary Encoding** — Easy to debug and test
 - **TCP localhost only** — Listens on `127.0.0.1:6767` by default
-- **Minimal Dependencies** — Uses the `github.com/rpdg/winput` library for keyboard/mouse input
+- **Minimal Dependencies** — No external input libraries; uses Win32 calls via Go's
+  builtin syscall (user32.dll) for keyboard/mouse input
 
 ## Building
 
+Build with the standard Go toolchain. The produced binary name is up to you;
+the examples below use `input_handler.exe` but `go build` (no -o) will produce a
+platform-appropriate binary named after the module.
+
 ```bash
-go build -o input_handler.exe
+go build
 ```
 
 ## Running
 
 ```bash
-.\input_handler.exe
+.\InputEventHandler.exe
 ```
 
-Output:
+Example output (logs may include the client remote address and active connection count):
+
 ```
 >>> Input Engine Active <<<
-Listening on 127.0.0.1:6767
+Listening on 127.0.0.1:6767 (PID: 0)
 ```
 
-The server runs forever, accepting connections on port 6767. Each connection is handled in its own goroutine.
+Note: the PID value is a placeholder in the current implementation and may be 0.
+
+The server runs until it receives an interrupt/termination signal. It accepts
+connections on the configured port (default 6767). Each connection is handled
+concurrently in its own goroutine and the server performs a graceful shutdown
+when requested.
 
 ---
 
@@ -172,10 +183,10 @@ For a complete reference, see `keymap/keymap.go` in the source code.
 
 ## Client Examples
 
-### Go Client
+### Go Client (example in repo)
 
 ```go
-package example
+package examples
 
 import (
 	"encoding/json"
@@ -332,7 +343,7 @@ socket.on('connect', () => {
 
 ### cURL / Bash
 
-You can even use netcat or bash:
+You can use netcat or bash to send a single JSON line to the server:
 
 ```bash
 # Press 'A' key
@@ -346,32 +357,35 @@ echo '{"virtual_key":"VK_LBUTTON","duration":10}' | nc localhost 6767
 
 ## Architecture
 
-The project is organized into clean Go packages:
+The project is organized into small Go packages:
 
-- **`example.go`** — Entry point, starts the listener on port 6767
+- **`main.go`** — program entry point; parses flags and starts the listener
 - **`listener/listener.go`** — TCP server, connection handling, JSON parsing
-- **`input/input.go`** — Windows API wrapper for keyboard and mouse input
-- **`keymap/keymap.go`** — Virtual Key code reference table
+- **`input/input.go`** — Win32 input wrapper (uses user32.dll via syscall)
+- **`keymap/keymap.go`** — Virtual Key name → code mapping
+- **`examples/client_example.go`** — small Go client showing how to send requests
 
 ---
 
 ## Error Handling
 
-The server logs errors to stdout:
+The server logs activity and errors to stdout. Example lines you may see:
 
 ```
-Connected: 127.0.0.1:54321
-VirtualKey=VK_A Duration=50ms
-VirtualKey=VK_LBUTTON Duration=10ms
-Disconnected: EOF
+Connected: 127.0.0.1:54321 (active: 1)
+[127.0.0.1:54321] ✓ VirtualKey=VK_A Duration=50ms
+[127.0.0.1:54321] ✓ VirtualKey=VK_LBUTTON Duration=10ms
+Disconnected: 127.0.0.1:54321 (clean)
 ```
 
-If a virtual key is unknown:
+If a virtual key is unknown the server logs the error but keeps the connection open:
+
 ```
-Unknown virtual key: VK_INVALID
+[127.0.0.1:54321] Unknown virtual key: VK_INVALID
 ```
 
-The server continues waiting for the next command and won't disconnect the client.
+The server continues processing subsequent lines from the same client after
+logging errors; it does not disconnect the client on malformed requests.
 
 ---
 
@@ -388,3 +402,4 @@ The server continues waiting for the next command and won't disconnect the clien
 
 MIT
 
+# InputEventHandler
