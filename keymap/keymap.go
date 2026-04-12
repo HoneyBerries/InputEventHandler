@@ -1,131 +1,142 @@
 package keymap
 
+// KeyCode is a type alias for key codes to improve type safety
+type KeyCode uint16
+
 // KeyDef defines a keyboard/mouse key
 // Keyboard: Code = virtual key (0x01 - 0xFF)
 // Mouse: Code = 256 (left), 257 (right), 258 (middle), 259 (x1), 260 (x2)
 type KeyDef struct {
-	Code uint16 // virtual key for keyboard, or 256+ for mouse buttons
+	Code KeyCode
 }
 
-// VirtualKeyMap maps Windows virtual key names to KeyDef
-// Stores Windows Virtual Key codes, not scan codes
-var VirtualKeyMap = map[string]KeyDef{
-	// Mouse buttons (256+ for safe distinction)
-	"VK_LBUTTON":  {Code: 256},
-	"VK_RBUTTON":  {Code: 257},
-	"VK_MBUTTON":  {Code: 258},
-	"VK_XBUTTON1": {Code: 259},
-	"VK_XBUTTON2": {Code: 260},
+// VirtualKeyMap maps Windows virtual key names to their codes.
+// Keyboard codes are 0x01-0xFF (standard Windows virtual key codes).
+// Mouse codes are 256-260 (custom encoding for safe distinction from keyboard).
+var VirtualKeyMap = map[string]KeyCode{
+	// Mouse buttons (256+ for safe distinction from keyboard keys)
+	"VK_LBUTTON":  256,
+	"VK_RBUTTON":  257,
+	"VK_MBUTTON":  258,
+	"VK_XBUTTON1": 259,
+	"VK_XBUTTON2": 260,
 
 	// Function keys
-	"VK_F1":  {Code: 0x70},
-	"VK_F2":  {Code: 0x71},
-	"VK_F3":  {Code: 0x72},
-	"VK_F4":  {Code: 0x73},
-	"VK_F5":  {Code: 0x74},
-	"VK_F6":  {Code: 0x75},
-	"VK_F7":  {Code: 0x76},
-	"VK_F8":  {Code: 0x77},
-	"VK_F9":  {Code: 0x78},
-	"VK_F10": {Code: 0x79},
-	"VK_F11": {Code: 0x7A},
-	"VK_F12": {Code: 0x7B},
+	"VK_F1":  0x70,
+	"VK_F2":  0x71,
+	"VK_F3":  0x72,
+	"VK_F4":  0x73,
+	"VK_F5":  0x74,
+	"VK_F6":  0x75,
+	"VK_F7":  0x76,
+	"VK_F8":  0x77,
+	"VK_F9":  0x78,
+	"VK_F10": 0x79,
+	"VK_F11": 0x7A,
+	"VK_F12": 0x7B,
 
 	// Alphanumeric keys (A-Z, 0-9)
-	"VK_0": {Code: 0x30},
-	"VK_1": {Code: 0x31},
-	"VK_2": {Code: 0x32},
-	"VK_3": {Code: 0x33},
-	"VK_4": {Code: 0x34},
-	"VK_5": {Code: 0x35},
-	"VK_6": {Code: 0x36},
-	"VK_7": {Code: 0x37},
-	"VK_8": {Code: 0x38},
-	"VK_9": {Code: 0x39},
+	"VK_0": 0x30,
+	"VK_1": 0x31,
+	"VK_2": 0x32,
+	"VK_3": 0x33,
+	"VK_4": 0x34,
+	"VK_5": 0x35,
+	"VK_6": 0x36,
+	"VK_7": 0x37,
+	"VK_8": 0x38,
+	"VK_9": 0x39,
 
-	"VK_A": {Code: 0x41},
-	"VK_B": {Code: 0x42},
-	"VK_C": {Code: 0x43},
-	"VK_D": {Code: 0x44},
-	"VK_E": {Code: 0x45},
-	"VK_F": {Code: 0x46},
-	"VK_G": {Code: 0x47},
-	"VK_H": {Code: 0x48},
-	"VK_I": {Code: 0x49},
-	"VK_J": {Code: 0x4A},
-	"VK_K": {Code: 0x4B},
-	"VK_L": {Code: 0x4C},
-	"VK_M": {Code: 0x4D},
-	"VK_N": {Code: 0x4E},
-	"VK_O": {Code: 0x4F},
-	"VK_P": {Code: 0x50},
-	"VK_Q": {Code: 0x51},
-	"VK_R": {Code: 0x52},
-	"VK_S": {Code: 0x53},
-	"VK_T": {Code: 0x54},
-	"VK_U": {Code: 0x55},
-	"VK_V": {Code: 0x56},
-	"VK_W": {Code: 0x57},
-	"VK_X": {Code: 0x58},
-	"VK_Y": {Code: 0x59},
-	"VK_Z": {Code: 0x5A},
+	"VK_A": 0x41,
+	"VK_B": 0x42,
+	"VK_C": 0x43,
+	"VK_D": 0x44,
+	"VK_E": 0x45,
+	"VK_F": 0x46,
+	"VK_G": 0x47,
+	"VK_H": 0x48,
+	"VK_I": 0x49,
+	"VK_J": 0x4A,
+	"VK_K": 0x4B,
+	"VK_L": 0x4C,
+	"VK_M": 0x4D,
+	"VK_N": 0x4E,
+	"VK_O": 0x4F,
+	"VK_P": 0x50,
+	"VK_Q": 0x51,
+	"VK_R": 0x52,
+	"VK_S": 0x53,
+	"VK_T": 0x54,
+	"VK_U": 0x55,
+	"VK_V": 0x56,
+	"VK_W": 0x57,
+	"VK_X": 0x58,
+	"VK_Y": 0x59,
+	"VK_Z": 0x5A,
 
 	// Special keys
-	"VK_BACK":   {Code: 0x08},
-	"VK_TAB":    {Code: 0x09},
-	"VK_RETURN": {Code: 0x0D},
-	"VK_ESCAPE": {Code: 0x1B},
-	"VK_SPACE":  {Code: 0x20},
-	"VK_DELETE": {Code: 0x2E},
-	"VK_INSERT": {Code: 0x2D},
+	"VK_BACK":   0x08,
+	"VK_TAB":    0x09,
+	"VK_RETURN": 0x0D,
+	"VK_ESCAPE": 0x1B,
+	"VK_SPACE":  0x20,
+	"VK_DELETE": 0x2E,
+	"VK_INSERT": 0x2D,
 
 	// Navigation keys
-	"VK_HOME":  {Code: 0x24},
-	"VK_END":   {Code: 0x23},
-	"VK_PRIOR": {Code: 0x21}, // Page Up
-	"VK_NEXT":  {Code: 0x22}, // Page Down
+	"VK_HOME":  0x24,
+	"VK_END":   0x23,
+	"VK_PRIOR": 0x21, // Page Up
+	"VK_NEXT":  0x22, // Page Down
 
 	// Arrow keys
-	"VK_LEFT":  {Code: 0x25},
-	"VK_RIGHT": {Code: 0x27},
-	"VK_UP":    {Code: 0x26},
-	"VK_DOWN":  {Code: 0x28},
+	"VK_LEFT":  0x25,
+	"VK_RIGHT": 0x27,
+	"VK_UP":    0x26,
+	"VK_DOWN":  0x28,
 
 	// Modifier keys
-	"VK_SHIFT":    {Code: 0x10},
-	"VK_CONTROL":  {Code: 0x11},
-	"VK_MENU":     {Code: 0x12}, // Alt
-	"VK_LSHIFT":   {Code: 0xA0},
-	"VK_RSHIFT":   {Code: 0xA1},
-	"VK_LCONTROL": {Code: 0xA2},
-	"VK_RCONTROL": {Code: 0xA3},
-	"VK_LMENU":    {Code: 0xA4},
-	"VK_RMENU":    {Code: 0xA5},
+	"VK_SHIFT":    0x10,
+	"VK_CONTROL":  0x11,
+	"VK_MENU":     0x12, // Alt
+	"VK_LSHIFT":   0xA0,
+	"VK_RSHIFT":   0xA1,
+	"VK_LCONTROL": 0xA2,
+	"VK_RCONTROL": 0xA3,
+	"VK_LMENU":    0xA4, // Left Alt
+	"VK_RMENU":    0xA5, // Right Alt
 
 	// Lock keys
-	"VK_CAPITAL": {Code: 0x14},
-	"VK_NUMLOCK": {Code: 0x90},
-	"VK_SCROLL":  {Code: 0x91},
+	"VK_CAPITAL": 0x14,
+	"VK_NUMLOCK": 0x90,
+	"VK_SCROLL":  0x91,
 
 	// Numpad keys
-	"VK_NUMPAD0":  {Code: 0x60},
-	"VK_NUMPAD1":  {Code: 0x61},
-	"VK_NUMPAD2":  {Code: 0x62},
-	"VK_NUMPAD3":  {Code: 0x63},
-	"VK_NUMPAD4":  {Code: 0x64},
-	"VK_NUMPAD5":  {Code: 0x65},
-	"VK_NUMPAD6":  {Code: 0x66},
-	"VK_NUMPAD7":  {Code: 0x67},
-	"VK_NUMPAD8":  {Code: 0x68},
-	"VK_NUMPAD9":  {Code: 0x69},
-	"VK_MULTIPLY": {Code: 0x6A},
-	"VK_ADD":      {Code: 0x6B},
-	"VK_SUBTRACT": {Code: 0x6D},
-	"VK_DECIMAL":  {Code: 0x6E},
-	"VK_DIVIDE":   {Code: 0x6F},
+	"VK_NUMPAD0":  0x60,
+	"VK_NUMPAD1":  0x61,
+	"VK_NUMPAD2":  0x62,
+	"VK_NUMPAD3":  0x63,
+	"VK_NUMPAD4":  0x64,
+	"VK_NUMPAD5":  0x65,
+	"VK_NUMPAD6":  0x66,
+	"VK_NUMPAD7":  0x67,
+	"VK_NUMPAD8":  0x68,
+	"VK_NUMPAD9":  0x69,
+	"VK_MULTIPLY": 0x6A,
+	"VK_ADD":      0x6B,
+	"VK_SUBTRACT": 0x6D,
+	"VK_DECIMAL":  0x6E,
+	"VK_DIVIDE":   0x6F,
 
 	// Additional keys
-	"VK_PAUSE":    {Code: 0x13},
-	"VK_SNAPSHOT": {Code: 0x2C}, // Print Screen
-	"VK_PRINT":    {Code: 0x2A},
+	"VK_PAUSE":    0x13,
+	"VK_SNAPSHOT": 0x2C, // Print Screen
+	"VK_PRINT":    0x2A,
+}
+
+// KeyCodeByName looks up a key code by name.
+// Returns (keyCode, ok) where ok is true if the key name was found.
+func KeyCodeByName(name string) (KeyCode, bool) {
+	code, ok := VirtualKeyMap[name]
+	return code, ok
 }
