@@ -401,5 +401,3 @@ logging errors; it does not disconnect the client on malformed requests.
 ## License
 
 MIT
-
-# InputEventHandler
