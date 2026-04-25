@@ -60,6 +60,29 @@ The server accepts **line-delimited JSON** input. Each line is a complete JSON o
 - **`virtual_key`** (string, required): Windows Virtual Key name (e.g., `VK_A`, `VK_LBUTTON`, `VK_RETURN`)
 - **`duration`** (uint16, required): How long to hold the key in milliseconds
 
+### Response Format
+
+After processing each request, the server sends back a JSON response:
+
+```json
+{
+  "success": true
+}
+```
+
+- **`success`** (boolean): `true` if the input was executed successfully, `false` if it failed (e.g., unknown virtual key, invalid syscall)
+
+**Example responses:**
+```json
+{"success": true}
+```
+
+```json
+{"success": false}
+```
+
+**Important:** The client should read the response before sending the next request. This ensures that the input has been fully processed before proceeding.
+
 ### Examples
 
 **Press the 'A' key for 50ms:**
@@ -189,20 +212,31 @@ For a complete reference, see `keymap/keymap.go` in the source code.
 package examples
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net"
 	"time"
 )
 
-func sendInput(conn net.Conn, virtualKey string, duration uint16) error {
+func sendInput(conn net.Conn, reader *bufio.Reader, virtualKey string, duration uint16) error {
 	request := map[string]interface{}{
 		"virtual_key": virtualKey,
 		"duration":    duration,
 	}
 	jsonData, _ := json.Marshal(request)
 	_, err := conn.Write(append(jsonData, '\n'))
-	return err
+	if err != nil {
+		return err
+	}
+
+	// Wait for response from server
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	fmt.Println("Response:", response)
+	return nil
 }
 
 func example() {
@@ -213,16 +247,18 @@ func example() {
 	}
 	defer conn.Close()
 
+	reader := bufio.NewReader(conn)
+
 	// Press 'A' for 50ms
-	sendInput(conn, "VK_A", 50)
+	sendInput(conn, reader, "VK_A", 50)
 	time.Sleep(100 * time.Millisecond)
 
 	// Left click for 10ms
-	sendInput(conn, "VK_LBUTTON", 10)
+	sendInput(conn, reader, "VK_LBUTTON", 10)
 	time.Sleep(100 * time.Millisecond)
 
 	// Press Enter
-	sendInput(conn, "VK_RETURN", 0)
+	sendInput(conn, reader, "VK_RETURN", 0)
 }
 ```
 
@@ -240,6 +276,10 @@ def send_input(sock, virtual_key, duration):
     }
     sock.sendall((json.dumps(request) + '\n').encode())
     print(f"Sent: {request}")
+    
+    # Wait for response from server
+    response = sock.recv(1024).decode()
+    print(f"Response: {response}")
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect(("127.0.0.1", 6767))
@@ -268,10 +308,12 @@ import org.json.JSONObject;
 public class InputClient {
     private Socket socket;
     private PrintWriter out;
+    private BufferedReader in;
 
     public InputClient(String host, int port) throws IOException {
         socket = new Socket(host, port);
         out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     public void sendInput(String virtualKey, int duration) throws IOException {
@@ -280,6 +322,10 @@ public class InputClient {
         request.put("duration", duration);
         out.println(request.toString());
         System.out.println("Sent: " + request.toString());
+        
+        // Wait for response from server
+        String response = in.readLine();
+        System.out.println("Response: " + response);
     }
 
     public void close() throws IOException {
@@ -309,35 +355,41 @@ public class InputClient {
 
 ```javascript
 const net = require('net');
+const readline = require('readline');
 
 const socket = net.createConnection({ host: '127.0.0.1', port: 6767 });
+const rl = readline.createInterface({ input: socket });
 
-function sendInput(virtualKey, duration) {
+async function sendInput(virtualKey, duration) {
     const request = {
         virtual_key: virtualKey,
         duration: duration
     };
     socket.write(JSON.stringify(request) + '\n');
     console.log('Sent:', request);
+    
+    // Wait for response from server
+    return new Promise((resolve) => {
+        rl.once('line', (response) => {
+            console.log('Response:', response);
+            resolve();
+        });
+    });
 }
 
-socket.on('connect', () => {
+socket.on('connect', async () => {
     // Press 'A' for 50ms
-    sendInput('VK_A', 50);
+    await sendInput('VK_A', 50);
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    setTimeout(() => {
-        // Left click for 10ms
-        sendInput('VK_LBUTTON', 10);
-    }, 100);
+    // Left click for 10ms
+    await sendInput('VK_LBUTTON', 10);
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    setTimeout(() => {
-        // Press Enter
-        sendInput('VK_RETURN', 0);
-    }, 200);
+    // Press Enter
+    await sendInput('VK_RETURN', 0);
 
-    setTimeout(() => {
-        socket.end();
-    }, 300);
+    socket.end();
 });
 ```
 
@@ -369,7 +421,7 @@ The project is organized into small Go packages:
 
 ## Error Handling
 
-The server logs activity and errors to stdout. Example lines you may see:
+The server logs activity and errors to stdout and sends response JSON to the client. Example server logs you may see:
 
 ```
 Connected: 127.0.0.1:54321 (active: 1)
@@ -378,7 +430,11 @@ Connected: 127.0.0.1:54321 (active: 1)
 Disconnected: 127.0.0.1:54321 (clean)
 ```
 
-If a virtual key is unknown the server logs the error but keeps the connection open:
+For each request, the server responds with:
+- `{"success": true}` if the input was executed successfully
+- `{"success": false}` if the request failed (e.g., unknown virtual key, invalid syscall)
+
+If a virtual key is unknown the server logs the error, responds with `{"success": false}`, and keeps the connection open:
 
 ```
 [127.0.0.1:54321] Unknown virtual key: VK_INVALID

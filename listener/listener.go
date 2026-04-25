@@ -19,6 +19,11 @@ type InputRequest struct {
 	Duration   uint16 `json:"duration"`
 }
 
+// InputResponse represents a JSON response sent back to the client
+type InputResponse struct {
+	Success bool `json:"success"`
+}
+
 // Server manages the input event listener and active connections
 type Server struct {
 	listener     net.Listener
@@ -105,6 +110,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 	log.Printf("Connected: %s (active: %d)", remoteAddr, atomic.LoadInt32(&s.activeConns))
 
 	scanner := bufio.NewScanner(conn)
+	writer := bufio.NewWriter(conn)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -131,12 +137,19 @@ func (s *Server) handleConnection(conn net.Conn) {
 		}
 
 		// Execute input event
+		success := true
 		if err := input.Tap(uint16(keyCode), req.Duration); err != nil {
 			log.Printf("[%s] Input failed for %s: %v", remoteAddr, req.VirtualKey, err)
-			continue
+			success = false
+		} else {
+			log.Printf("[%s] ✓ VirtualKey=%s Duration=%dms", remoteAddr, req.VirtualKey, req.Duration)
 		}
 
-		log.Printf("[%s] ✓ VirtualKey=%s Duration=%dms", remoteAddr, req.VirtualKey, req.Duration)
+		// Send response back to client
+		resp := InputResponse{Success: success}
+		respJSON, _ := json.Marshal(resp)
+		fmt.Fprintf(writer, "%s\n", respJSON)
+		writer.Flush()
 	}
 
 	if err := scanner.Err(); err != nil {
