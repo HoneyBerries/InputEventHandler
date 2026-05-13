@@ -69,6 +69,12 @@ func (s *server) handle(conn net.Conn) {
 
 	sc := bufio.NewScanner(conn)
 	w := bufio.NewWriter(conn)
+	writeResponse := func(success bool) {
+		b, _ := json.Marshal(response{Success: success})
+		_, _ = w.Write(b)
+		_ = w.WriteByte('\n')
+		_ = w.Flush()
+	}
 	for sc.Scan() {
 		line := sc.Bytes()
 		if len(line) == 0 {
@@ -78,16 +84,19 @@ func (s *server) handle(conn net.Conn) {
 		var req request
 		if err := json.Unmarshal(line, &req); err != nil {
 			slog.Warn("bad request", "addr", addr, "err", err)
+			writeResponse(false)
 			continue
 		}
 		if req.VirtualKey == "" {
 			slog.Warn("missing virtual_key", "addr", addr)
+			writeResponse(false)
 			continue
 		}
 
 		code, ok := lookupKey(req.VirtualKey)
 		if !ok {
 			slog.Warn("unknown key", "addr", addr, "key", req.VirtualKey)
+			writeResponse(false)
 			continue
 		}
 
@@ -98,10 +107,7 @@ func (s *server) handle(conn net.Conn) {
 			slog.Info("tap", "key", req.VirtualKey, "duration_ms", req.Duration)
 		}
 
-		b, _ := json.Marshal(response{Success: err == nil})
-		w.Write(b)
-		w.WriteByte('\n')
-		w.Flush()
+		writeResponse(err == nil)
 	}
 
 	if err := sc.Err(); err != nil {
