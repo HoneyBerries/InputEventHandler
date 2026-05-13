@@ -22,23 +22,18 @@ There are no automated tests. The CI workflow (`.github/workflows/build.yml`) on
 
 ## Architecture
 
-Four packages with a clear single-direction dependency chain:
+Single `main` package with four files organized by responsibility:
 
-```
-main → listener → input
-              └→ keymap
-```
-
-- **`main.go`** — parses the `-port` flag, wires up `SIGINT`/`SIGTERM` for graceful shutdown, and delegates everything to `listener.Server`
-- **`listener/listener.go`** — TCP server; accepts concurrent connections (one goroutine per client), reads line-delimited JSON, validates and looks up the key via `keymap`, calls `input.Tap`, and writes a `{"success": bool}` response per request
-- **`input/input.go`** — thin Win32 wrapper around `keybd_event` and `mouse_event` from `user32.dll` via Go's `syscall` package; the only place that touches the OS
-- **`keymap/keymap.go`** — static map of `VK_*` name strings → numeric codes; keyboard uses standard Windows virtual key codes (0x01–0xFF), mouse uses custom codes 256–260 to avoid overlap
+- **`main.go`** — parses the `-port` flag, wires up `SIGINT`/`SIGTERM` for graceful shutdown, and launches the server
+- **`server.go`** — TCP server; accepts concurrent connections (one goroutine per client), reads line-delimited JSON, validates and looks up the key via `lookupKey`, calls `tap`, and writes a `{"success": bool}` response per request
+- **`input.go`** — thin Win32 wrapper around `keybd_event` and `mouse_event` from `user32.dll` via Go's `syscall` package; the only place that touches the OS. Contains `tap`, `tapKeyboard`, `tapMouse`, and `winOK` helper
+- **`keymap.go`** — static map of `VK_*` name strings → numeric codes; keyboard uses standard Windows virtual key codes (0x01–0xFF), mouse uses custom codes 256–260 to avoid overlap. Exports `lookupKey`
 
 ## Key Design Details
 
 **Mouse vs keyboard code space:** Mouse button codes start at 256 to stay safely above the 0xFF ceiling of Windows virtual key codes. `input.Tap` dispatches to `tapMouse` vs `tapKeyboard` based on whether `keyCode >= 256`.
 
-**Windows success-as-error quirk:** `syscall` on Windows returns a non-nil error even on success with the message `"The operation completed successfully."` — `isSuccessError` in `input/input.go` detects this and suppresses it.
+**Windows success-as-error quirk:** `syscall` on Windows returns a non-nil error even on success with the message `"The operation completed successfully."` — `winOK` in `input.go` detects this and suppresses it.
 
 **Protocol ordering:** The server sends one JSON response per request line. Clients must read the response before sending the next request; this is the only backpressure mechanism and ensures the previous input has completed before the next one starts.
 
