@@ -1,0 +1,50 @@
+name: Create Release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.26'
+
+      - name: Build
+        run: go build -v -o InputEventHandler.exe
+
+      - name: Extract version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(sed -n 's/.*const version = "\([^"]*\)".*/\1/p' main.go)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+
+      - name: Check if release exists
+        id: check_release
+        continue-on-error: true
+        run: gh release view v${{ steps.version.outputs.version }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        if: steps.check_release.outcome == 'failure'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          artifacts: 'InputEventHandler.exe'
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
