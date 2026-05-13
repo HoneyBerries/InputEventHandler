@@ -59,14 +59,3 @@ go build -v -o InputEventHandler.exe
 
 - The server listens on `127.0.0.1` only and has no authentication.
 - Do not expose this port to untrusted users/processes on the same machine.
-
-## Project layout
-
-- `main.go`: CLI flags + lifecycle (SIGINT/SIGTERM)
-- `server.go`: TCP server + JSON protocol
-- `input.go`: Win32 `user32.dll` calls (`keybd_event`, `mouse_event`)
-- `keymap.go`: `VK_*` name → code mapping
-
-## License
-
-MIT
