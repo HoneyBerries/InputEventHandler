@@ -1,27 +1,14 @@
-package keymap
+package main
 
-// KeyCode is a type alias for key codes to improve type safety
-type KeyCode uint16
-
-// KeyDef defines a keyboard/mouse key
-// Keyboard: Code = virtual key (0x01 - 0xFF)
-// Mouse: Code = 256 (left), 257 (right), 258 (middle), 259 (x1), 260 (x2)
-type KeyDef struct {
-	Code KeyCode
-}
-
-// VirtualKeyMap maps Windows virtual key names to their codes.
-// Keyboard codes are 0x01-0xFF (standard Windows virtual key codes).
-// Mouse codes are 256-260 (custom encoding for safe distinction from keyboard).
-var VirtualKeyMap = map[string]KeyCode{
-	// Mouse buttons (256+ for safe distinction from keyboard keys)
+var keys = map[string]uint16{
+	// Mouse buttons (256+ to stay above the 0xFF keyboard ceiling)
 	"VK_LBUTTON":  256,
 	"VK_RBUTTON":  257,
 	"VK_MBUTTON":  258,
 	"VK_XBUTTON1": 259,
 	"VK_XBUTTON2": 260,
 
-	// Function keys
+	// Function
 	"VK_F1":  0x70,
 	"VK_F2":  0x71,
 	"VK_F3":  0x72,
@@ -35,7 +22,7 @@ var VirtualKeyMap = map[string]KeyCode{
 	"VK_F11": 0x7A,
 	"VK_F12": 0x7B,
 
-	// Alphanumeric keys (A-Z, 0-9)
+	// Digits
 	"VK_0": 0x30,
 	"VK_1": 0x31,
 	"VK_2": 0x32,
@@ -47,6 +34,7 @@ var VirtualKeyMap = map[string]KeyCode{
 	"VK_8": 0x38,
 	"VK_9": 0x39,
 
+	// Letters
 	"VK_A": 0x41,
 	"VK_B": 0x42,
 	"VK_C": 0x43,
@@ -74,7 +62,7 @@ var VirtualKeyMap = map[string]KeyCode{
 	"VK_Y": 0x59,
 	"VK_Z": 0x5A,
 
-	// Special keys
+	// Special
 	"VK_BACK":   0x08,
 	"VK_TAB":    0x09,
 	"VK_RETURN": 0x0D,
@@ -83,35 +71,35 @@ var VirtualKeyMap = map[string]KeyCode{
 	"VK_DELETE": 0x2E,
 	"VK_INSERT": 0x2D,
 
-	// Navigation keys
+	// Navigation
 	"VK_HOME":  0x24,
 	"VK_END":   0x23,
-	"VK_PRIOR": 0x21, // Page Up
-	"VK_NEXT":  0x22, // Page Down
+	"VK_PRIOR": 0x21,
+	"VK_NEXT":  0x22,
 
-	// Arrow keys
+	// Arrows
 	"VK_LEFT":  0x25,
 	"VK_RIGHT": 0x27,
 	"VK_UP":    0x26,
 	"VK_DOWN":  0x28,
 
-	// Modifier keys
+	// Modifiers
 	"VK_SHIFT":    0x10,
 	"VK_CONTROL":  0x11,
-	"VK_MENU":     0x12, // Alt
+	"VK_MENU":     0x12,
 	"VK_LSHIFT":   0xA0,
 	"VK_RSHIFT":   0xA1,
 	"VK_LCONTROL": 0xA2,
 	"VK_RCONTROL": 0xA3,
-	"VK_LMENU":    0xA4, // Left Alt
-	"VK_RMENU":    0xA5, // Right Alt
+	"VK_LMENU":    0xA4,
+	"VK_RMENU":    0xA5,
 
-	// Lock keys
+	// Lock
 	"VK_CAPITAL": 0x14,
 	"VK_NUMLOCK": 0x90,
 	"VK_SCROLL":  0x91,
 
-	// Numpad keys
+	// Numpad
 	"VK_NUMPAD0":  0x60,
 	"VK_NUMPAD1":  0x61,
 	"VK_NUMPAD2":  0x62,
@@ -128,15 +116,13 @@ var VirtualKeyMap = map[string]KeyCode{
 	"VK_DECIMAL":  0x6E,
 	"VK_DIVIDE":   0x6F,
 
-	// Additional keys
+	// Misc
 	"VK_PAUSE":    0x13,
-	"VK_SNAPSHOT": 0x2C, // Print Screen
+	"VK_SNAPSHOT": 0x2C,
 	"VK_PRINT":    0x2A,
 }
 
-// KeyCodeByName looks up a key code by name.
-// Returns (keyCode, ok) where ok is true if the key name was found.
-func KeyCodeByName(name string) (KeyCode, bool) {
-	code, ok := VirtualKeyMap[name]
+func lookupKey(name string) (uint16, bool) {
+	code, ok := keys[name]
 	return code, ok
 }
