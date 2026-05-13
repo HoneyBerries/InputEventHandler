@@ -8,6 +8,8 @@ import (
 	"syscall"
 )
 
+const version = "1.0.1"
+
 func main() {
 	port := flag.Int("port", 6767, "TCP port to listen on")
 	flag.Parse()
