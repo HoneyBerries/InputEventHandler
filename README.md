@@ -47,9 +47,19 @@ Clients should read the response before sending the next request (this is the se
 - Mouse buttons are exposed as `VK_LBUTTON`, `VK_RBUTTON`, `VK_MBUTTON`, `VK_XBUTTON1`, `VK_XBUTTON2`.
 - Full supported key list lives in `keymap.go`.
 
-## Build from source
+## Development
 
 Requires Go `1.26+` and Windows.
+
+### Run directly
+
+```powershell
+go run .
+```
+
+**Note:** Use `go run .` (current directory) not `go run main.go` — the latter only compiles `main.go` and misses the other package files.
+
+### Build
 
 ```powershell
 go build -v -o InputEventHandler.exe
